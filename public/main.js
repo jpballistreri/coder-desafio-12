@@ -10,19 +10,25 @@ function sendData(e) {
 
 function render(data) {
   console.log(data);
+  console.log(data);
   var html = data
     .map(function (elem, index) {
-      return `<div>
-                 <strong>Socket Id: ${elem.socketId} => </strong>:
-                 <em>${elem.message}</em>
-        </div>`;
+      return `
+                <tr>
+                  <td>${elem.title}</td>
+                  <td>${elem.price}</td>
+                  <td><img src="${elem.thumbnail}"></td>
+                </tr>
+              
+              `;
     })
     .join(" ");
 
-  document.getElementById("messages").innerHTML = html;
+  document.getElementById("productos").innerHTML = html;
 }
 
 socket.on("messages", function (data) {
   console.log("RECIBI MENSAJE");
+  console.log(data);
   render(data);
 });
