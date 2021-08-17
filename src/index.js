@@ -24,9 +24,9 @@ const myServer = http.Server(app);
 
 myServer.listen(puerto, () => console.log("Server up en puerto", puerto));
 
-//server.on("error", (err) => {
-//  console.log("ERROR ATAJADO", err);
-//});
+myServer.on("error", (err) => {
+  console.log("ERROR ATAJADO", err);
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -42,27 +42,28 @@ myWSServer.on("connection", function (socket) {
   console.log(`ID DEL SOCKET DEL CLIENTE => ${socket.client.id}`);
   console.log(`ID DEL SOCKET DEL SERVER => ${socket.id}`);
 
-  //socket.on("new-message", function (data) {
-  //  const newMessage = {
-  //    socketId: socket.client.id,
-  //    message: data,
-  //  };
-  //  console.log(newMessage);
-  //  messages.push(newMessage);
-  //
-  //  //PARA RESPONDERLE A UN SOLO CLIENTE
-  //  // socket.emit('messages', messages);
-  //
-  //  //PARA ENVIARLE EL MENSAJE A TODOS
-  //  myWSServer.emit("messages", messages);
-  //
-  //  //PARA ENVIARLE MENSAJE A TODOS MENOS AL QUE ME LO MANDO
-  //  // socket.broadcast.emit('messages', messages);
-  //});
+  socket.on("nuevo-producto", () => {
+    console.log("nuevo producto!!!");
+    const productos = fs.readFile(
+      "./productos.json",
+      "utf-8",
+      async function (err, data) {
+        if (err) {
+          console.log(err);
+          return [];
+        } else {
+          console.log("\n\nUn cliente ha ingresado un producto");
+          console.log(`ID DEL SOCKET DEL CLIENTE => ${socket.client.id}`);
+          console.log(`ID DEL SOCKET DEL SERVER => ${socket.id}`);
+          const arrayProductos = JSON.parse(data);
+          //console.log(arrayProductos);
+          myWSServer.emit("messages", arrayProductos);
+        }
+      }
+    );
+  });
 
-  //console.log(productos);
-
-  socket.on("askData", async () => {
+  socket.on("askData", () => {
     const productos = fs.readFile(
       "./productos.json",
       "utf-8",
@@ -74,9 +75,6 @@ myWSServer.on("connection", function (socket) {
 
         const arrayProductos = JSON.parse(data);
         socket.emit("messages", arrayProductos);
-        //console.log(arrayProductos);
-
-        //return arrayProductos;
       }
     );
     console.log("ME LLEGO DATA");
